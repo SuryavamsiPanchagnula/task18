@@ -1,0 +1,68 @@
+package task18_question1;
+
+import java.time.Duration;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class facebook_signup {
+
+    public static void main(String[] args) {
+        WebDriverManager.chromedriver().setup();
+        WebDriver driver = new ChromeDriver();
+
+        try {
+            driver.get("https://www.facebook.com/");
+            driver.manage().window().maximize();
+
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+
+            // Click on the Sign-Up button
+            WebElement signUpButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@class='_42ft _4jy0 _6lti _4jy6 _4jy2 selected _51sy']")));
+            signUpButton.click();
+
+            // Wait for the registration form to be visible
+            WebElement registerForm = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("reg")));
+
+            // Fill out the registration form
+            registerForm.findElement(By.name("firstname")).sendKeys("Test");
+            registerForm.findElement(By.name("lastname")).sendKeys("user");
+            registerForm.findElement(By.name("reg_email__")).sendKeys("tst@gmail.com");
+            registerForm.findElement(By.name("reg_email_confirmation__")).sendKeys("tst@gmail.com");
+            registerForm.findElement(By.name("reg_passwd__")).sendKeys("Vamsi@2000");
+
+            // Select date of birth
+            new Select(registerForm.findElement(By.id("day"))).selectByValue("11");
+            new Select(registerForm.findElement(By.id("month"))).selectByValue("5");
+            new Select(registerForm.findElement(By.id("year"))).selectByValue("1985");
+
+            // Select gender
+            registerForm.findElement(By.xpath("//input[@value='2']")).click();
+
+            // Submit the registration form
+            WebElement submitButton = registerForm.findElement(By.name("websubmit"));
+            submitButton.click();
+
+            // Wait for the error message or successful registration indicator
+            try {
+                // Wait for an error message to appear
+                WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='reg_error_inner']")));
+                System.out.println("Registration Failed: " + errorMessage.getText());
+            } catch (Exception e) {
+                // Handle success or other outcomes
+                System.out.println("Registration Success or Error not detected within timeout.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Ensure WebDriver quits
+            driver.quit();
+        }
+    }
+}

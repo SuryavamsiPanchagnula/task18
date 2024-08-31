@@ -1,7 +1,6 @@
 package task18_question1;
 
 import java.time.Duration;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -9,92 +8,60 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class facebook_signup {
-	
-	public static void main(String args[]) throws InterruptedException {
-		
-		WebDriverManager.chromedriver().setup();
-		
-		WebDriver driver = new ChromeDriver();
-		
-		driver.get("https://www.facebook.com/");
-		
-		driver.manage().window().maximize();
-		
-		driver.findElement(By.xpath("//form//a[@class='_42ft _4jy0 _6lti _4jy6 _4jy2 selected _51sy']")).click();
-		
-		 WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-	        
-	     WebElement register_form = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@id='reg']")));
-		
-	     WebElement firstname = register_form.findElement(By.xpath("//form//input[@name='firstname']"));
-	     
-	     firstname.sendKeys("Test");
-	     
-	     WebElement lastname = register_form.findElement(By.xpath("//form//input[@name='lastname']"));
-	     
-	     lastname.sendKeys("user");
-	     
-	     WebElement email = register_form.findElement(By.xpath("//form//input[@name='reg_email__']"));
-	     
-	     email.sendKeys("tst@gmail.com");
-	     
-	     WebElement re_enter_email = register_form.findElement(By.xpath("//form//input[@name='reg_email_confirmation__']"));
-	     
-	     re_enter_email.sendKeys("tst@gmail.com");
-	     
-	     WebElement password = register_form.findElement(By.xpath("//form//input[@name='reg_passwd__']"));
-	     
-	     password.sendKeys("Vamsi@2000");
-	     
-	     WebElement DOB = register_form.findElement(By.xpath("//form//span[@class='_5k_4']"));
-	     
-	     WebElement day = DOB.findElement(By.xpath("//form//span//select[@id='day']"));
-	     
-	     Select day_of_month = new Select(day);
-	     
-	     day_of_month.selectByValue("11");
-	       
-	     WebElement month = DOB.findElement(By.xpath("//form//span//select[@id='month']"));
-	     
-	     Select birth_month = new Select(month);
-	     
-	     birth_month.selectByValue("5");
-	     
-	     WebElement year = DOB.findElement(By.xpath("//form//span//select[@id='year']"));
-	     
-	     Select year_of_birth = new Select(year);
-	     
-	     year_of_birth.selectByValue("1985");
-	     
-	     WebElement Gender = register_form.findElement(By.xpath("//form//div//span[@class='_5k_3']"));
-	     
-	     WebElement confirm_gender= Gender.findElement(By.xpath("//form//div//span/input[@value='2']"));
-	     
-	     confirm_gender.click();
-	     
-	     Thread.sleep(5000);
-	     
-	     WebElement registration_submit = register_form.findElement(By.xpath("//form//div//button[@name='websubmit']"));
-	     
-	     registration_submit.click();
-	     
-	     WebElement error_message = driver.findElement(By.id("reg_error_inner"));
-	     
-	     if(error_message.isDisplayed()) {
-	    	 
-	    	 System.out.println("Registration Failed");
-	     }
-	     else {
-	    	 System.out.println("Success");
-	     }
-	     
-		System.out.println("thankyou");
-		
-		
-	}
+
+    public static void main(String[] args) {
+        WebDriverManager.chromedriver().setup();
+        WebDriver driver = new ChromeDriver();
+
+        try {
+            driver.get("https://www.facebook.com/");
+            driver.manage().window().maximize();
+
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+
+            // Click on the Sign-Up button
+            WebElement signUpButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@class='_42ft _4jy0 _6lti _4jy6 _4jy2 selected _51sy']")));
+            signUpButton.click();
+
+            // Wait for the registration form to be visible
+            WebElement registerForm = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("reg")));
+
+            // Fill out the registration form
+            registerForm.findElement(By.name("firstname")).sendKeys("Test");
+            registerForm.findElement(By.name("lastname")).sendKeys("user");
+            registerForm.findElement(By.name("reg_email__")).sendKeys("tst@gmail.com");
+            registerForm.findElement(By.name("reg_passwd__")).sendKeys("Vamsi@2000");
+
+            // Select date of birth
+            new Select(registerForm.findElement(By.id("day"))).selectByValue("11");
+            new Select(registerForm.findElement(By.id("month"))).selectByValue("5");
+            new Select(registerForm.findElement(By.id("year"))).selectByValue("1985");
+
+            // Select gender
+            registerForm.findElement(By.xpath("//input[@value='2']")).click();
+
+            // Submit the registration form
+            WebElement submitButton = registerForm.findElement(By.name("websubmit"));
+            submitButton.click();
+
+            // Wait for the error message or successful registration indicator
+            try {
+                // Wait for an error message to appear
+                WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='reg_error_inner']")));
+                System.out.println("Registration Failed: " + errorMessage.getText());
+            } catch (Exception e) {
+                // Handle success or other outcomes
+                System.out.println("Registration Success or Error not detected within timeout.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Ensure WebDriver quits
+            driver.quit();
+        }
+    }
 }
